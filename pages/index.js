@@ -14,25 +14,29 @@ import {
 export default function Home() {
   const [add, setAdd] = useState(false);
   const [planList, setPlanList] = useState([]);
-  const [dataChanged, setDataChanged] = useState(false);
   const [transactions, setTransactions] = useState();
 
   useEffect(() => {
     (async () => {
       await getPlanData();
     })();
-  }, [dataChanged]);
+  }, []);
 
   const getPlanData = async () => {
     const data = await getAllPlans();
-    const latest = data[0];
-    const transactions = await getTransactionsforPeriod(latest.id);
-    setTransactions(transactions);
+    console.log(data);
     setPlanList(data);
   };
 
   const onBudgetAdd = () => {
     getPlanData();
+    setAdd(false);
+  };
+
+  const getTransactions = async (plan) => {
+    console.log(plan);
+    const transactions = await getTransactionsforPeriod(plan.id);
+    setTransactions({ plan, transactions });
   };
 
   return (
@@ -63,9 +67,15 @@ export default function Home() {
             ></AddBudget>
           </>
         )}
-        {/* {planList && <BudgetList data={planList}></BudgetList>} */}
-        <div className="flex justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
-          {planList && <BudgetList data={planList}></BudgetList>}
+        <div className="flex flex-col md:flex-row justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
+          {planList.length > 0 ? (
+            <BudgetList
+              data={planList}
+              onPlanSelect={(e) => getTransactions(e)}
+            ></BudgetList>
+          ) : (
+            <p>No Plans yet. Add one now!</p>
+          )}
 
           {transactions && <Transactions data={transactions}></Transactions>}
         </div>

@@ -12,6 +12,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
   const [categories, setCategories] = useState([
     { category: "", amount: "", index: index },
   ]);
+  const [error, setError] = useState("");
 
   const updatePeriod = (type, e) => {
     setPeriod((prev) => {
@@ -25,9 +26,13 @@ const AddBudget = ({ onSuccess, onCancel }) => {
       period,
       categories: categories.map(({ index, ...rest }) => rest),
     };
-    const id = await addBudgetPlan(plan);
-    if (id) {
-      onSuccess();
+    try {
+      const id = await addBudgetPlan(plan);
+      if (id) {
+        onSuccess();
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -62,7 +67,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
 
   return (
     <>
-      <div className="border-b border-b-black p-12 m-4">
+      <div className="border-b border-b-black w-[500px] sm:p-12 sm:m-4 sm:min-w-[500px] sm:mx-auto">
         <p className="text-2xl text-bold mb-2">Plan Details</p>
         <form>
           <div className="flex flex-col justify-center items-center max-w-[500px] mx-auto">
@@ -170,6 +175,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
           >
             Cancel
           </button>
+          <p className="text-red-500 font-bold my-4 text-xl">{error}</p>
         </form>
       </div>
     </>

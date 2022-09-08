@@ -31,5 +31,10 @@ export function convertTimestampToDateStr(timestampObj) {
 }
 
 export function formatDate(date) {
-  return format(date, "MM/dd/yyyy");
+  if (typeof date === "object") {
+    return format(date, "MM/dd/yyyy");
+  } else if (typeof date === "string") {
+    const d = new Date();
+    return format(d, "MM/dd/yyyy");
+  }
 }
