@@ -3,40 +3,24 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import AddBudget from "../components/budget/AddBudget";
 import BudgetList from "../components/budget/BudgetList";
-import Transactions from "../components/budget/Transactions";
+import Transactions from "../components/budget/TransactionsList";
 import {
   addData,
   getAllPlans,
   getBudgetInfo,
   getTransactionsforPeriod,
 } from "../lib/db";
+import Link from "next/link";
 
 export default function Home() {
-  const [add, setAdd] = useState(false);
   const [planList, setPlanList] = useState([]);
-  const [transactions, setTransactions] = useState();
 
   useEffect(() => {
     (async () => {
-      await getPlanData();
+      const data = await getAllPlans();
+      setPlanList(data);
     })();
   }, []);
-
-  const getPlanData = async () => {
-    const data = await getAllPlans();
-    setPlanList(data);
-  };
-
-  const onBudgetAdd = () => {
-    getPlanData();
-    setAdd(false);
-  };
-
-  const getTransactions = async (plan) => {
-    console.log(plan);
-    const transactions = await getTransactionsforPeriod(plan.id);
-    setTransactions({ plan, transactions });
-  };
 
   return (
     <>
@@ -46,39 +30,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="text-center">
-        <h1 className="text-5xl my-5 text-center font-bold">Budget Tracker</h1>
-
-        {!add && (
-          <button
-            onClick={() => setAdd(true)}
-            className="p-2 bg-black rounded-2xl mx-auto text-white"
-          >
+      <div className="text-center">
+        <Link href={"/plan/create"}>
+          <a className="p-3 bg-black rounded-2xl mx-auto text-white">
+            {" "}
             Create a New Plan
-          </button>
-        )}
+          </a>
+        </Link>
 
-        {add && (
-          <>
-            <AddBudget
-              onSuccess={() => onBudgetAdd()}
-              onCancel={() => setAdd(false)}
-            ></AddBudget>
-          </>
-        )}
         <div className="flex flex-col md:flex-row justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
           {planList.length > 0 ? (
-            <BudgetList
-              data={planList}
-              onPlanSelect={(e) => getTransactions(e)}
-            ></BudgetList>
+            <BudgetList data={planList}></BudgetList>
           ) : (
             <p>No Plans yet. Add one now!</p>
           )}
-
-          {transactions && <Transactions data={transactions}></Transactions>}
         </div>
-      </main>
+      </div>
     </>
   );
 }

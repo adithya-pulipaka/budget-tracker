@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 
-const BudgetList = ({ data, onPlanSelect }) => {
+const BudgetList = ({ data }) => {
   const [planId, setPlanId] = useState("");
+  const router = useRouter();
 
   const updateVisibility = (id) => {
     setPlanId((prev) => {
@@ -13,7 +15,7 @@ const BudgetList = ({ data, onPlanSelect }) => {
   };
 
   const viewTransaction = (plan) => {
-    onPlanSelect(plan);
+    router.push(`transactions/${plan.id}`);
   };
 
   return (

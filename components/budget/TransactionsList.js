@@ -3,7 +3,7 @@ import { Timestamp } from "firebase/firestore";
 import { convertTimestampToDate, formatDate } from "../../utils/date-fns";
 import { addPlanTransaction } from "../../lib/db";
 
-const Transactions = ({ data }) => {
+const TransactionsList = ({ data }) => {
   const { plan } = data;
   // const [transactionData, setTransactionData] = useState(data);
   const [transactionData, setTransactionData] = useState("");
@@ -190,4 +190,4 @@ const Transactions = ({ data }) => {
   );
 };
 
-export default Transactions;
+export default TransactionsList;
