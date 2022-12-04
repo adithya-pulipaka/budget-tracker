@@ -24,7 +24,6 @@ export default function Home() {
 
   const getPlanData = async () => {
     const data = await getAllPlans();
-    console.log(data);
     setPlanList(data);
   };
 
