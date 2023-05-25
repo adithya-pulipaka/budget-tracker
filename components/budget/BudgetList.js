@@ -1,21 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { MONTHS } from "../../utils/constants";
+import Link from "next/link";
 
 const BudgetList = ({ data }) => {
-  const [planId, setPlanId] = useState("");
   const router = useRouter();
 
-  const updateVisibility = (id) => {
-    setPlanId((prev) => {
-      if (id === planId) {
-        return "";
-      }
-      return id;
-    });
-  };
-
   const viewTransaction = (plan) => {
-    router.push(`transactions/${plan.id}`);
+    router.push(`plan/${plan.id}`);
   };
 
   return (
@@ -28,40 +20,16 @@ const BudgetList = ({ data }) => {
               key={plan.id}
               className="border-b border-b-black max-w-[500px] mx-auto"
             >
-              <div className="flex justify-between my-4 cursor-pointer">
-                <p
-                  onClick={() => updateVisibility(plan.id)}
-                  className="hover:underline hover:bg-blue-500 hover:text-white"
-                >
-                  {plan.period.month},{plan.period.year}
-                </p>
+              <div className="flex justify-between my-4">
+                <p>{`${MONTHS[plan.period.month]},${plan.period.year}`}</p>
                 <div>
-                  <button onClick={(e) => viewTransaction(plan)}>
-                    {" "}
-                    View Transactions
-                  </button>
+                  <Link href={`plan/${plan.id}`} className="text-red">
+                    <a className="hover:underline hover:bg-black hover:text-white hover:rounded-md hover:p-1">
+                      View Plan
+                    </a>
+                  </Link>
                 </div>
               </div>
-              {planId === plan.id && (
-                <div>
-                  <div className="flex text-black font-bold border-b border-b-black w-[175px] auto">
-                    <p className="p-2 basis-[100px] text-left">Category</p>
-                    <p className="p-2 basis-[75px] text-right">Budget</p>
-                  </div>
-                  {plan.categories.map((cat) => {
-                    return (
-                      <div key={cat.category} className="flex w-[175px]">
-                        <p className="p-2 text-left basis-[100px]">
-                          {cat.category}
-                        </p>
-                        <p className="p-2 text-right basis-[75px]">
-                          {cat.amount}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           );
         })}

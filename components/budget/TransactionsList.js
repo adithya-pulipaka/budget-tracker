@@ -1,44 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { Timestamp } from "firebase/firestore";
-import { convertTimestampToDate, formatDate } from "../../utils/date-fns";
-import { addPlanTransaction } from "../../lib/db";
+import {
+  convertTimestampToDate,
+  formatDate,
+  formatAsHTMLDate,
+  convertTimestampToDateStr,
+} from "../../utils/date-fns";
+import {
+  addPlanTransaction,
+  getPlanById,
+  getTransactionsforPeriod,
+} from "../../lib/db";
 
-const TransactionsList = ({ data }) => {
-  const { plan } = data;
-  // const [transactionData, setTransactionData] = useState(data);
-  const [transactionData, setTransactionData] = useState("");
+const TransactionsList = ({ planId, planInfo, transactions, onAdd }) => {
   const [add, setAdd] = useState(false);
-  const [date, setDate] = useState("");
-  const [desc, setDesc] = useState("");
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
+  // const [trans, setTrans] = useState(transactions);
+  console.log(transactions);
+  // const { plan } = data;
+  // // const [transactionData, setTransactionData] = useState(data);
+  // const [transactionData, setTransactionData] = useState("");
+  const [transactionData, setTransactionData] = useState({
+    desc: "",
+    amount: "",
+    category: "",
+    date: new Date(),
+  });
 
   useEffect(() => {
-    console.log(add);
-    setTransactionData(data);
-    setAdd(false);
-    setDate("");
-    setCategory("");
-    setAmount("");
-    setDesc("");
-  }, [data]);
+    console.log(planInfo);
+    if (planInfo.categories.length == 1) {
+      setTransactionData({
+        ...transactionData,
+        category: planInfo.categories[0].category,
+      });
+    }
+  }, [planInfo]);
 
   const addTransaction = async (e) => {
     e.preventDefault();
     const payload = {
-      date,
-      desc,
-      category,
-      amount,
-      planId: transactionData.plan.id,
+      planId,
+      ...transactionData,
     };
-    const id = await addPlanTransaction(payload);
     console.log(payload);
+    // onAdd(payload);
+    // const id = await addPlanTransaction(payload);
     setAdd(false);
-    setTransactionData((prev) => {
-      const { plan, transactions } = prev;
-      return { plan, transactions: [...transactions, { id, ...payload }] };
-    });
+    // setTrans((prev) => {
+    //   [...prev, { id, ...payload }];
+    // });
   };
 
   const cancelTransaction = (e) => {
@@ -47,14 +57,9 @@ const TransactionsList = ({ data }) => {
   };
   return (
     <>
-      <div className="p-10 pt-6 basis-[600px]">
-        <h1 className="text-3xl mb-4">
-          Transactions for{" "}
-          <span className="text-blue-500 font-bold">
-            {plan.period.month}, {plan.period.year}
-          </span>
-        </h1>
-        {!add && transactionData?.transactions?.length > 0 ? (
+      <div>
+        <h1 className="text-3xl mb-4">Transactions</h1>
+        {!add && transactions?.length > 0 ? (
           <div>
             <div className="grid grid-cols-4 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
               <p>Date</p>
@@ -62,13 +67,15 @@ const TransactionsList = ({ data }) => {
               <p>Category</p>
               <p>Amount</p>
             </div>
-            {transactionData.transactions.map((transaction) => {
+            {transactions?.map((transaction) => {
               return (
                 <div
                   key={transaction.id}
                   className="grid grid-cols-4 gap-2 place-content-center"
                 >
-                  <p className="my-4">{formatDate(transaction.date)}</p>
+                  <p className="my-4">
+                    {convertTimestampToDateStr(transaction.date)}
+                  </p>
                   <p className="my-4">{transaction.desc}</p>
                   <p className="my-4">{transaction.category}</p>
                   <p className="my-4">{transaction.amount}</p>
@@ -95,8 +102,13 @@ const TransactionsList = ({ data }) => {
                     name="date"
                     id="date"
                     className="border border-black p-1 rounded-md"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    value={formatAsHTMLDate(transactionData.date)}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        date: e.target.value,
+                      })
+                    }
                   />{" "}
                 </p>
               </div>
@@ -110,8 +122,13 @@ const TransactionsList = ({ data }) => {
                     name="description"
                     id="description"
                     className="border border-black p-1 rounded-md"
-                    value={desc}
-                    onChange={(e) => setDesc(e.target.value)}
+                    value={transactionData.desc}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        desc: e.target.value,
+                      })
+                    }
                   />
                 </p>
               </div>
@@ -123,11 +140,16 @@ const TransactionsList = ({ data }) => {
                   <select
                     name="category"
                     id="category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    value={transactionData.category}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        category: e.target.value,
+                      })
+                    }
                     className="border border-black p-1 rounded-md"
                   >
-                    {plan.categories.map((cat) => {
+                    {planInfo.categories.map((cat) => {
                       return (
                         <option value={cat.category} key={cat.category}>
                           {cat.category}
@@ -135,14 +157,6 @@ const TransactionsList = ({ data }) => {
                       );
                     })}
                   </select>
-                  {/* <input
-                    type="text"
-                    name="category"
-                    id="category"
-                    className="border border-black p-1 rounded-md"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  /> */}
                 </p>
               </div>
               <div className="flex justify-evenly p-2">
@@ -155,8 +169,13 @@ const TransactionsList = ({ data }) => {
                     name="amount"
                     id="amount"
                     className="border border-black p-1 rounded-md"
-                    value={amount}
-                    onChange={(e) => setAmount(parseFloat(e.target.value))}
+                    value={transactionData.amount}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        amount: parseFloat(e.target.value),
+                      })
+                    }
                   />
                 </p>
               </div>
