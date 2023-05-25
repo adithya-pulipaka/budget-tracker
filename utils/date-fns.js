@@ -27,7 +27,8 @@ export function convertTimestampToDate(timestampObj) {
 export function convertTimestampToDateStr(timestampObj) {
   const { seconds, nanoseconds } = timestampObj;
   const date = new Timestamp(seconds, nanoseconds).toDate();
-  return date.toISOString();
+  return formatDate(date);
+  // return date.toISOString();
 }
 
 export function formatDate(date) {
@@ -37,4 +38,8 @@ export function formatDate(date) {
     const d = new Date();
     return format(d, "MM/dd/yyyy");
   }
+}
+
+export function formatAsHTMLDate(date) {
+  return format(date, "yyyy-MM-dd");
 }

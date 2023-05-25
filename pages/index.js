@@ -11,9 +11,12 @@ import {
   getTransactionsforPeriod,
 } from "../lib/db";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [planList, setPlanList] = useState([]);
+  const [isNewPlan, setIsNewPlan] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -22,21 +25,36 @@ export default function Home() {
     })();
   }, []);
 
+  const onPlanAdd = (id) => {
+    setIsNewPlan(false);
+    router.push(`plan/${id}`);
+  };
+
   return (
     <>
       <Head>
         <title>Budget Tracker</title>
         <meta name="description" content="Manage and Track your Budgets" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="text-center">
-        <Link href={"/plan/create"}>
-          <a className="p-3 bg-black rounded-2xl mx-auto text-white">
-            {" "}
-            Create a New Plan
-          </a>
-        </Link>
+        {!isNewPlan && (
+          <button
+            className="bg-black text-white p-2 rounded-2xl mx-auto text-sm"
+            onClick={() => setIsNewPlan(true)}
+          >
+            New Plan
+          </button>
+        )}
+
+        <div>
+          {isNewPlan && (
+            <AddBudget
+              onSuccess={(id) => onPlanAdd(id)}
+              onCancel={() => setIsNewPlan(false)}
+            ></AddBudget>
+          )}
+        </div>
 
         <div className="flex flex-col md:flex-row justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
           {planList.length > 0 ? (

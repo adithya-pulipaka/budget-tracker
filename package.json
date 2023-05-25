@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.10",
+    "@heroicons/react": "^2.0.17",
     "classnames": "^2.3.1",
     "date-fns": "^2.29.2",
     "firebase": "^9.9.2",

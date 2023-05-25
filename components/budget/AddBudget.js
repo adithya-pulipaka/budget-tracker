@@ -29,7 +29,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
     try {
       const id = await addBudgetPlan(plan);
       if (id) {
-        onSuccess();
+        onSuccess(id);
       }
     } catch (err) {
       setError(err.message);
