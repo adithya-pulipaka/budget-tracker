@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase/firestore";
 import { format } from "date-fns";
 
 export const MONTHS = [

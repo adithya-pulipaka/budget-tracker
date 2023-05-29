@@ -19,10 +19,10 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    (async () => {
-      const data = await getAllPlans();
-      setPlanList(data);
-    })();
+    // (async () => {
+    //   const data = await getAllPlans();
+    //   setPlanList(data);
+    // })();
   }, []);
 
   const onPlanAdd = (id) => {
