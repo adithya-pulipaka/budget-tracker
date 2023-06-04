@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { addBudgetPlan, getBudgetInfo } from "../../lib/db";
-import { MONTHS, YEARS } from "../../utils/date-fns";
+import { addBudgetPlan } from "@/lib/ApiClient";
+import { MONTHS, MONTHS_MAP, YEARS } from "../../utils/date-fns";
 import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/24/solid";
 
 const AddBudget = ({ onSuccess, onCancel }) => {
@@ -10,7 +10,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
   const [period, setPeriod] = useState({ month, year });
   const [index, setIndex] = useState(0);
   const [categories, setCategories] = useState([
-    { category: "", amount: "", index: index },
+    { name: "", amount: "", index: index },
   ]);
   const [error, setError] = useState("");
 
@@ -23,14 +23,12 @@ const AddBudget = ({ onSuccess, onCancel }) => {
   const addPlan = async (e) => {
     e.preventDefault();
     const plan = {
-      period,
+      period: { year: period.year, month: MONTHS_MAP[period.month] },
       categories: categories.map(({ index, ...rest }) => rest),
     };
     try {
-      const id = await addBudgetPlan(plan);
-      if (id) {
-        onSuccess(id);
-      }
+      const response = await addBudgetPlan(plan);
+      onSuccess(response);
     } catch (err) {
       setError(err.message);
     }
@@ -49,7 +47,7 @@ const AddBudget = ({ onSuccess, onCancel }) => {
   const addCategory = (e) => {
     e.preventDefault();
     setCategories((existing) => {
-      return [...existing, { category: "", amount: "", index: index + 1 }];
+      return [...existing, { name: "", amount: "", index: index + 1 }];
     });
     setIndex((value) => value + 1);
   };
@@ -121,9 +119,9 @@ const AddBudget = ({ onSuccess, onCancel }) => {
                         name="category"
                         id="category"
                         className="mx-4 my-4 p-2 border border-black rounded-lg pr-4 mr-2"
-                        value={cat.category}
+                        value={cat.name}
                         onChange={(e) =>
-                          updateCategory("category", cat.index, e.target.value)
+                          updateCategory("name", cat.index, e.target.value)
                         }
                         placeholder="Category Name"
                         required

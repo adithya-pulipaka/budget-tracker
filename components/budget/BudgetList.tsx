@@ -3,11 +3,14 @@ import { useRouter } from "next/router";
 import { MONTHS } from "../../utils/constants";
 import Link from "next/link";
 
-const BudgetList = ({ data }) => {
-  const router = useRouter();
+type PlanList = {
+  data: Array<Plan>;
+};
 
-  const viewTransaction = (plan) => {
-    router.push(`plan/${plan.id}`);
+const BudgetList = ({ data }: PlanList) => {
+  const formatPeriod = (period) => {
+    const date = new Date(period);
+    return `${MONTHS[date.getUTCMonth() + 1]}, ${date.getUTCFullYear()}`;
   };
 
   return (
@@ -17,13 +20,13 @@ const BudgetList = ({ data }) => {
         {data.map((plan) => {
           return (
             <div
-              key={plan.id}
+              key={plan.planId}
               className="border-b border-b-black max-w-[500px] mx-auto"
             >
               <div className="flex justify-between my-4">
-                <p>{`${MONTHS[plan.period.month]},${plan.period.year}`}</p>
+                <p>{`${formatPeriod(plan.period)}`}</p>
                 <div>
-                  <Link href={`plan/${plan.id}`} className="text-red">
+                  <Link href={`plan/${plan.planId}`} className="text-red">
                     <a className="hover:underline hover:bg-black hover:text-white hover:rounded-md hover:p-1">
                       View Plan
                     </a>
