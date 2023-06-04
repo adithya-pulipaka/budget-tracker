@@ -9,40 +9,57 @@ import {
   addPlanTransaction,
   getPlanById,
   getTransactionsforPeriod,
-} from "../../lib/db";
+} from "../../lib/ApiClient";
 
-const TransactionsList = ({ planId, planInfo, transactions, onAdd }) => {
+type TransactionDetails = {
+  planId: number;
+  planInfo: any;
+  transactions: Array<Transaction>;
+  onAdd: any;
+};
+
+const TransactionsList = ({
+  planId,
+  planInfo,
+  transactions,
+  onAdd,
+}: TransactionDetails) => {
   const [add, setAdd] = useState(false);
   // const [trans, setTrans] = useState(transactions);
-  console.log(transactions);
+  // console.log(transactions);
   // const { plan } = data;
   // // const [transactionData, setTransactionData] = useState(data);
   // const [transactionData, setTransactionData] = useState("");
   const [transactionData, setTransactionData] = useState({
     desc: "",
-    amount: "",
+    amount: 0.0,
     category: "",
     date: new Date(),
   });
 
   useEffect(() => {
     console.log(planInfo);
-    if (planInfo.categories.length == 1) {
-      setTransactionData({
-        ...transactionData,
-        category: planInfo.categories[0].category,
-      });
-    }
+    // if (planInfo.categories.length == 1) {
+    //   setTransactionData({
+    //     ...transactionData,
+    //     category: planInfo.categories[0].category,
+    //   });
+    // }
   }, [planInfo]);
 
   const addTransaction = async (e) => {
     e.preventDefault();
     const payload = {
       planId,
-      ...transactionData,
+      tranDate: formatAsHTMLDate(transactionData.date),
+      description: transactionData.desc,
+      catId: planInfo.categories.find(
+        (cat) => cat.name === transactionData.category
+      ).catId,
+      amount: transactionData.amount,
     };
     console.log(payload);
-    // onAdd(payload);
+    onAdd(payload);
     // const id = await addPlanTransaction(payload);
     setAdd(false);
     // setTrans((prev) => {
@@ -69,14 +86,15 @@ const TransactionsList = ({ planId, planInfo, transactions, onAdd }) => {
             {transactions?.map((transaction) => {
               return (
                 <div
-                  key={transaction.id}
+                  key={transaction.tranId}
                   className="grid grid-cols-4 gap-2 place-content-center"
                 >
                   <p className="my-4">
-                    {convertTimestampToDateStr(transaction.date)}
+                    {convertTimestampToDateStr(transaction.tranDate)}
+                    {/* {convertTimestampToDateStr(transaction.date)} */}
                   </p>
-                  <p className="my-4">{transaction.desc}</p>
-                  <p className="my-4">{transaction.category}</p>
+                  <p className="my-4">{transaction.description}</p>
+                  <p className="my-4">{transaction.category.name}</p>
                   <p className="my-4">{transaction.amount}</p>
                 </div>
               );
@@ -105,7 +123,7 @@ const TransactionsList = ({ planId, planInfo, transactions, onAdd }) => {
                     onChange={(e) =>
                       setTransactionData({
                         ...transactionData,
-                        date: e.target.value,
+                        date: new Date(e.target.value),
                       })
                     }
                   />{" "}
@@ -150,8 +168,8 @@ const TransactionsList = ({ planId, planInfo, transactions, onAdd }) => {
                   >
                     {planInfo.categories.map((cat) => {
                       return (
-                        <option value={cat.category} key={cat.category}>
-                          {cat.category}
+                        <option value={cat.name} key={cat.catId}>
+                          {cat.name}
                         </option>
                       );
                     })}

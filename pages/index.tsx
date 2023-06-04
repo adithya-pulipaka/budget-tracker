@@ -1,16 +1,8 @@
 import Head from "next/head";
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import AddBudget from "../components/budget/AddBudget";
+import AddBudget from "@/components/budget/AddBudget";
 import BudgetList from "../components/budget/BudgetList";
-import Transactions from "../components/budget/TransactionsList";
-import {
-  addData,
-  getAllPlans,
-  getBudgetInfo,
-  getTransactionsforPeriod,
-} from "../lib/db";
-import Link from "next/link";
+import { getAllPlans } from "@/lib/ApiClient";
 import { useRouter } from "next/router";
 
 export default function Home() {
@@ -19,10 +11,11 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // (async () => {
-    //   const data = await getAllPlans();
-    //   setPlanList(data);
-    // })();
+    (async () => {
+      const data = await getAllPlans();
+      console.log(data);
+      setPlanList(data);
+    })();
   }, []);
 
   const onPlanAdd = (id) => {
@@ -50,7 +43,7 @@ export default function Home() {
         <div>
           {isNewPlan && (
             <AddBudget
-              onSuccess={(id) => onPlanAdd(id)}
+              onSuccess={(plan) => onPlanAdd(plan["planId"])}
               onCancel={() => setIsNewPlan(false)}
             ></AddBudget>
           )}

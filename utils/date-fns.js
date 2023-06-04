@@ -15,6 +15,21 @@ export const MONTHS = [
   "December",
 ];
 
+export const MONTHS_MAP = {
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12,
+};
+
 export const YEARS = [2022, 2023, 2024, 2025, 2026];
 
 export function convertTimestampToDate(timestampObj) {
@@ -24,10 +39,7 @@ export function convertTimestampToDate(timestampObj) {
 }
 
 export function convertTimestampToDateStr(timestampObj) {
-  const { seconds, nanoseconds } = timestampObj;
-  const date = new Timestamp(seconds, nanoseconds).toDate();
-  return formatDate(date);
-  // return date.toISOString();
+  return formatDate(timestampObj);
 }
 
 export function formatDate(date) {
