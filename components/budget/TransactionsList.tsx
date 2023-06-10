@@ -38,7 +38,6 @@ const TransactionsList = ({
   });
 
   useEffect(() => {
-    console.log(planInfo);
     // if (planInfo.categories.length == 1) {
     //   setTransactionData({
     //     ...transactionData,
@@ -91,7 +90,6 @@ const TransactionsList = ({
                 >
                   <p className="my-4">
                     {convertTimestampToDateStr(transaction.tranDate)}
-                    {/* {convertTimestampToDateStr(transaction.date)} */}
                   </p>
                   <p className="my-4">{transaction.description}</p>
                   <p className="my-4">{transaction.category.name}</p>

@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 export const MONTHS = [
   "January",
@@ -46,8 +46,8 @@ export function formatDate(date) {
   if (typeof date === "object") {
     return format(date, "MM/dd/yyyy");
   } else if (typeof date === "string") {
-    const d = new Date();
-    return format(d, "MM/dd/yyyy");
+    const parsedDate = parse(date, "yyyy-MM-dd", new Date());
+    return format(parsedDate, "MM/dd/yyyy");
   }
 }
 
