@@ -19,11 +19,12 @@ type TransactionDetails = {
 };
 
 const TransactionsList = ({
-  planId,
+  // planId,
   planInfo,
   transactions,
-  onAdd,
-}: TransactionDetails) => {
+}: // onAdd,
+any) => {
+  console.log(transactions);
   const [add, setAdd] = useState(false);
   // const [trans, setTrans] = useState(transactions);
   // console.log(transactions);
@@ -46,33 +47,13 @@ const TransactionsList = ({
     // }
   }, [planInfo]);
 
-  const addTransaction = async (e) => {
-    e.preventDefault();
-    const payload = {
-      planId,
-      tranDate: formatAsHTMLDate(transactionData.date),
-      description: transactionData.desc,
-      catId: planInfo.categories.find(
-        (cat) => cat.name === transactionData.category
-      ).catId,
-      amount: transactionData.amount,
-    };
-    console.log(payload);
-    onAdd(payload);
-    // const id = await addPlanTransaction(payload);
-    setAdd(false);
-    // setTrans((prev) => {
-    //   [...prev, { id, ...payload }];
-    // });
-  };
-
   const cancelTransaction = (e) => {
     e.preventDefault();
     setAdd(false);
   };
   return (
     <>
-      <div>
+      <section className="py-2 text-center">
         <h1 className="text-3xl mb-4">Transactions</h1>
         {!add && transactions?.length > 0 ? (
           <div>
@@ -89,10 +70,10 @@ const TransactionsList = ({
                   className="grid grid-cols-4 gap-2 place-content-center"
                 >
                   <p className="my-4">
-                    {convertTimestampToDateStr(transaction.tranDate)}
+                    {convertTimestampToDate(transaction.tranDate)}
                   </p>
                   <p className="my-4">{transaction.description}</p>
-                  <p className="my-4">{transaction.category.name}</p>
+                  <p className="my-4">{transaction.category}</p>
                   <p className="my-4">{transaction.amount}</p>
                 </div>
               );
@@ -104,7 +85,7 @@ const TransactionsList = ({
           ""
         )}
 
-        {add && (
+        {/* {add && (
           <div>
             <form>
               <div className="flex justify-around p-2">
@@ -210,16 +191,8 @@ const TransactionsList = ({
               </div>
             </form>
           </div>
-        )}
-        {!add && (
-          <button
-            className="p-2 bg-black text-white rounded-lg"
-            onClick={() => setAdd(true)}
-          >
-            New Transaction
-          </button>
-        )}
-      </div>
+        )} */}
+      </section>
     </>
   );
 };

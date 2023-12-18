@@ -61,3 +61,14 @@ export async function getPlanById(id) {
     console.log(err);
   }
 }
+
+export async function getCategoriesByPlan(planId) {
+  try {
+    const response: AxiosResponse<ApiResponse> = await axios.get(
+      `${BASE_URL}/categories?planId=${planId}`
+    );
+    return response.data.payload;
+  } catch (err) {
+    console.log(err);
+  }
+}

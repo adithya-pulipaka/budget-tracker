@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { format, parse, setDate } from "date-fns";
 
 export const MONTHS = [
   "January",
@@ -32,10 +32,14 @@ export const MONTHS_MAP = {
 
 export const YEARS = [2022, 2023, 2024, 2025, 2026];
 
+export function convertTimestampToPeriodDate(timestampObj) {
+  const date = timestampObj.toDate();
+  return formatDate(setDate(date, 1));
+}
+
 export function convertTimestampToDate(timestampObj) {
-  const { seconds, nanoseconds } = timestampObj;
-  const date = new Timestamp(seconds, nanoseconds).toDate();
-  return date;
+  const date = timestampObj.toDate();
+  return formatDate(date);
 }
 
 export function convertTimestampToDateStr(timestampObj) {

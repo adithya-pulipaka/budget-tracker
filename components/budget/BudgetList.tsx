@@ -3,11 +3,15 @@ import { useRouter } from "next/router";
 import { MONTHS } from "../../utils/constants";
 import Link from "next/link";
 
-type PlanList = {
+type BudgetListProps = {
   data: Array<Plan>;
 };
-
-const BudgetList = ({ data }: PlanList) => {
+const BudgetList = ({ data }: BudgetListProps) => {
+  if (data.length === 0) {
+    return (
+      <p className="mt-4 text-xl text-slate-500">No Plans yet. Add one now!</p>
+    );
+  }
   const formatPeriod = (period) => {
     const date = new Date(period);
     return `${MONTHS[date.getUTCMonth() + 1]}, ${date.getUTCFullYear()}`;
@@ -15,7 +19,7 @@ const BudgetList = ({ data }: PlanList) => {
 
   return (
     <>
-      <div className="bg-slate-100 p-10 pt-6 basis-[500px] self-start">
+      <div className="bg-slate-100 p-10 pt-6 h-full">
         <h1 className="text-3xl mb-4">Existing Plans</h1>
         {data.map((plan) => {
           return (

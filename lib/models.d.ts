@@ -15,7 +15,7 @@ type Plan = {
 };
 
 type Transaction = {
-  tranId: number;
+  tranId: string;
   tranDate: Date;
   description: string;
   amount: number;
