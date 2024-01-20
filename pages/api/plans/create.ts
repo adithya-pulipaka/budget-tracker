@@ -4,6 +4,7 @@ import { Plan } from "@/lib/models/Plan";
 import { PlanInfo } from "@/lib/models/PlanInfo";
 import connect from "@/lib/mysql";
 import { NextApiRequest, NextApiResponse } from "next";
+import * as mysql from "mysql2/promise";
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,26 +14,26 @@ export default async function handler(
     res.status(405).json({ payload: null, error: `Method Not Supported` });
     return;
   }
-  console.log("res");
-  const db = await connect();
-  const payload: PlanRequest = req.body;
-  const planRepo = db.getRepository(Plan);
-  const plan = new Plan();
-  plan.period = new Date(payload.period.year, payload.period.month - 1, 1);
-  const planInfos = payload.categories.map((category) => {
-    const cat = new Category();
-    cat.name = category.name;
-    const planInfo = new PlanInfo();
-    planInfo.amount = category.amount;
-    planInfo.category = cat;
-    planInfo.plan = plan;
-    return planInfo;
-  });
-  plan.planInfo = planInfos;
-  await planRepo.save(plan);
-  const response = await planRepo.findOne({
-    where: { planId: 6 },
-    relations: { planInfo: { category: true } },
-  });
-  res.status(200).json({ payload: response, error: null });
+  const db: mysql.Connection = await connect();
+  const payload = req.body;
+  const data = await db.query(`INSERT INTO TRANSACTION SET ?`, payload);
+  console.log(data);
+  // const plan = new Plan();
+  // plan.period = new Date(payload.period.year, payload.period.month - 1, 1);
+  // const planInfos = payload.categories.map((category) => {
+  //   const cat = new Category();
+  //   cat.name = category.name;
+  //   const planInfo = new PlanInfo();
+  //   planInfo.amount = category.amount;
+  //   planInfo.category = cat;
+  //   planInfo.plan = plan;
+  //   return planInfo;
+  // });
+  // plan.planInfo = planInfos;
+  // await planRepo.save(plan);
+  // const response = await planRepo.findOne({
+  //   where: { planId: 6 },
+  //   relations: { planInfo: { category: true } },
+  // });
+  res.status(200).json({ payload: "response", error: null });
 }

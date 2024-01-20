@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { add, format, parse, sub } from "date-fns";
 
 export const MONTHS = [
   "January",
@@ -53,4 +53,8 @@ export function formatDate(date) {
 
 export function formatAsHTMLDate(date) {
   return format(date, "yyyy-MM-dd");
+}
+
+export function parseDateAsSelected(date) {
+  return add(date, { days: 1 });
 }

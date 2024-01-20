@@ -1,10 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { Category } from "@/lib/models/Category";
-import { Plan } from "@/lib/models/Plan";
-import { PlanInfo } from "@/lib/models/PlanInfo";
-import { Transaction } from "@/lib/models/Transaction";
 import connect from "@/lib/mysql";
 import { NextApiRequest, NextApiResponse } from "next";
+import * as mysql from "mysql2/promise";
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,24 +12,21 @@ export default async function handler(
     return;
   }
 
-  const db = await connect();
-  const tranRepo = db.getRepository(Transaction);
+  const db: mysql.Connection = await connect();
   const payload: TransactionRequest = req.body;
-  const catRepo = db.getRepository(Category);
-  const planRepo = db.getRepository(Plan);
-  const cat = await catRepo.findOne({ where: { catId: payload.catId } });
-  const plan = await planRepo.findOne({ where: { planId: payload.planId } });
-  const transaction = new Transaction();
-  const { tranDate, description, amount } = payload;
-  transaction.tranDate = tranDate;
-  transaction.description = description;
-  transaction.amount = amount;
-  transaction.category = cat;
-  transaction.plan = plan;
-  await tranRepo.save(transaction);
-  const response = await tranRepo.findOne({
-    where: { tranId: transaction.tranId },
-    relations: { category: true },
-  });
+
+  const record = {
+    tran_date: payload.tranDate,
+    description: payload.description,
+    cat_id: payload.catId,
+    plan_id: payload.planId,
+    amount: payload.amount,
+  };
+
+  const [insertedRow] = await db.query<mysql.ResultSetHeader>(
+    `INSERT INTO transaction SET ?`,
+    record
+  );
+  const response = { ...payload, tranId: insertedRow.insertId };
   res.status(200).json({ payload: response, error: null });
 }
