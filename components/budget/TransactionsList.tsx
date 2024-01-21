@@ -68,9 +68,8 @@ const TransactionsList = ({ transactions }) => {
   return (
     <>
       <div>
-        <h1 className="text-3xl mb-4">Transactions</h1>
         {!add && transactions?.length > 0 ? (
-          <div className="p-4">
+          <div className="p-2 md:p-4 w-full md:max-w-5xl mx-auto text-left">
             <div className="grid grid-cols-4 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
               <p>Date</p>
               <p>Description</p>

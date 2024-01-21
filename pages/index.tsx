@@ -11,6 +11,7 @@ import connect from "@/lib/mysql";
 import * as mysql from "mysql2/promise";
 import { parse } from "date-fns";
 import { CSVLink, CSVDownload } from "react-csv";
+import Reports from "@/components/budget/Reports";
 
 const list = [
   {
@@ -33,7 +34,11 @@ export default function Home({ categories }) {
   const [planList, setPlanList] = useState([]);
   const [tranList, setTranList] = useState([]);
   const [isNewPlan, setIsNewPlan] = useState(false);
-  const [viewTransactionsList, setViewTransactionsList] = useState(false);
+  const [activeTabFlag, setActiveTabFlag] = useState({
+    add: true,
+    list: false,
+    reports: false,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -58,8 +63,7 @@ export default function Home({ categories }) {
         category: categories.find((c) => c.cat_id === insertedTran.cat_id),
       },
     ]);
-    console.log(list);
-    setViewTransactionsList(true);
+    setActiveTabFlag({ add: false, list: true, reports: false });
   };
 
   return (
@@ -69,22 +73,34 @@ export default function Home({ categories }) {
         <meta name="description" content="Manage and Track your Budgets" />
       </Head>
 
-      <div className="text-center">
+      <div className="text-center mt-8">
         <div className="flex items-center justify-center gap-6">
           <button
-            className="bg-black text-white p-2 rounded-md"
-            onClick={() => setViewTransactionsList(false)}
+            className="btn"
+            onClick={() =>
+              setActiveTabFlag({ add: true, list: false, reports: false })
+            }
           >
             New Transaction
           </button>
           <button
-            className="bg-black text-white p-2 rounded-md"
-            onClick={() => setViewTransactionsList(true)}
+            className="btn"
+            onClick={() =>
+              setActiveTabFlag({ add: false, list: true, reports: false })
+            }
           >
             Transactions
           </button>
+          <button
+            className="btn"
+            onClick={() =>
+              setActiveTabFlag({ add: false, list: false, reports: true })
+            }
+          >
+            Reports
+          </button>
         </div>
-        {!viewTransactionsList && (
+        {activeTabFlag.add && (
           <div className="mt-2">
             <AddTransaction
               onAdd={addTransaction}
@@ -92,9 +108,14 @@ export default function Home({ categories }) {
             ></AddTransaction>
           </div>
         )}
-        {viewTransactionsList && (
+        {activeTabFlag.list && (
           <div className="mt-2">
             <TransactionsList transactions={tranList}></TransactionsList>
+          </div>
+        )}
+        {activeTabFlag.reports && (
+          <div className="mt-2">
+            <Reports></Reports>
           </div>
         )}
         {/* {!isNewPlan && (

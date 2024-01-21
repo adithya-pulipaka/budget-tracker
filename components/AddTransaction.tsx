@@ -5,7 +5,7 @@ const initialData = {
   tranDate: new Date(),
   desc: "",
   category: "",
-  amount: 0.0,
+  amount: 0,
 };
 
 const categories = [
@@ -19,8 +19,6 @@ const AddTransaction = ({ onAdd, categories }) => {
 
   const addTransaction = (e) => {
     e.preventDefault();
-    // console.log(categories);
-    // console.log(transactionData.category);
     const transaction = {
       tranDate: formatAsHTMLDate(transactionData.tranDate),
       description: transactionData.desc,
@@ -39,125 +37,103 @@ const AddTransaction = ({ onAdd, categories }) => {
   return (
     <>
       <section>
-        <div className=" inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="mt-4">
-              <form>
-                <div className="flex justify-around p-2">
-                  <p className="w-[25%] text-right">
-                    <label htmlFor="date">Date</label>
-                  </p>
-                  <p className="w-[75%] text-left pl-12">
-                    <input
-                      type="date"
-                      name="date"
-                      id="date"
-                      className="border border-black p-1 rounded-md"
-                      // value={"2023-06-10"}
-                      value={formatAsHTMLDate(transactionData.tranDate)}
-                      onChange={(e) => {
-                        // console.log(e.target.value);
-                        // console.log(
-                        //   parseDateAsSelected(new Date(e.target.value))
-                        // );
-                        // console.log(new Date(e.target.value));
-                        // }
-                        setTransactionData({
-                          ...transactionData,
-                          tranDate: parseDateAsSelected(
-                            new Date(e.target.value)
-                          ),
-                        });
-                      }}
-                    />{" "}
-                  </p>
-                </div>
-                <div className="flex justify-evenly p-2">
-                  <p className="w-[25%] text-right">
-                    <label htmlFor="description">Description</label>
-                  </p>
-                  <p className="w-[75%] text-left pl-12">
-                    <input
-                      type="text"
-                      name="description"
-                      id="description"
-                      className="border border-black p-1 rounded-md"
-                      value={transactionData.desc}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          desc: e.target.value,
-                        })
-                      }
-                    />
-                  </p>
-                </div>
-                <div className="flex justify-evenly p-2">
-                  <p className="w-[25%] text-right">
-                    <label htmlFor="category">Category</label>
-                  </p>
-                  <p className="w-[75%] text-left pl-12">
-                    <select
-                      name="category"
-                      id="category"
-                      value={transactionData.category}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          category: e.target.value,
-                        })
-                      }
-                      className="border border-black p-1 rounded-md"
-                    >
-                      <option disabled value="">
-                        - select a Category -{" "}
+        <div>
+          <div className="flex justify-center p-4 w-full mx-auto mt-4 md:max-w-sm">
+            <form className="w-full">
+              <div>
+                <label htmlFor="date" className="label font-bold">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  id="date"
+                  className="input input-bordered input-sm w-full"
+                  value={formatAsHTMLDate(transactionData.tranDate)}
+                  onChange={(e) => {
+                    setTransactionData({
+                      ...transactionData,
+                      tranDate: parseDateAsSelected(new Date(e.target.value)),
+                    });
+                  }}
+                />
+              </div>
+              <div>
+                <label htmlFor="description" className="label font-bold">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  id="description"
+                  className="input input-bordered input-sm w-full"
+                  value={transactionData.desc}
+                  onChange={(e) =>
+                    setTransactionData({
+                      ...transactionData,
+                      desc: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label htmlFor="category" className="label font-bold">
+                  Category
+                </label>
+                <select
+                  name="category"
+                  id="category"
+                  value={transactionData.category}
+                  onChange={(e) =>
+                    setTransactionData({
+                      ...transactionData,
+                      category: e.target.value,
+                    })
+                  }
+                  className="select select-bordered select-sm w-full"
+                >
+                  <option disabled value="">
+                    -- Pick a Category --
+                  </option>
+                  {categories.map((cat) => {
+                    return (
+                      <option value={cat.name} key={cat.catId}>
+                        {cat.name}
                       </option>
-                      {categories.map((cat) => {
-                        return (
-                          <option value={cat.name} key={cat.catId}>
-                            {cat.name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </p>
-                </div>
-                <div className="flex justify-evenly p-2">
-                  <p className="w-[25%] text-right">
-                    <label htmlFor="amount">Amount</label>
-                  </p>
-                  <p className="w-[75%] text-left pl-12">
-                    <input
-                      type="number"
-                      name="amount"
-                      id="amount"
-                      className="border border-black p-1 rounded-md"
-                      value={transactionData.amount}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          amount: parseFloat(e.target.value),
-                        })
-                      }
-                    />
-                  </p>
-                </div>
-                <div className="flex justify-center">
-                  <button
-                    className="p-2 bg-black text-white rounded-lg m-4"
-                    onClick={addTransaction}
-                  >
-                    Add
-                  </button>
-                  <button
-                    className="p-2 bg-black text-white rounded-lg m-4"
-                    onClick={(e) => resetTransaction(e)}
-                  >
-                    Reset
-                  </button>
-                </div>
-              </form>
-            </div>
+                    );
+                  })}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="amount" className="label font-bold">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  id="amount"
+                  className="input input-bordered input-sm w-full"
+                  value={transactionData.amount}
+                  onChange={(e) =>
+                    setTransactionData({
+                      ...transactionData,
+                      amount: parseFloat(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div className="flex mt-8 justify-center gap-4">
+                <button className="btn" onClick={addTransaction}>
+                  Add
+                </button>
+                <button
+                  className="btn btn-neutral"
+                  onClick={(e) => resetTransaction(e)}
+                >
+                  Reset
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </section>
