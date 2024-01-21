@@ -12,18 +12,13 @@ import {
 } from "../../lib/ApiClient";
 
 type TransactionDetails = {
-  planId: number;
-  planInfo: any;
+  // planId: number;
+  // planInfo: any;
   transactions: Array<Transaction>;
-  onAdd: any;
+  // onAdd: any;
 };
 
-const TransactionsList = ({
-  planId,
-  planInfo,
-  transactions,
-  onAdd,
-}: TransactionDetails) => {
+const TransactionsList = ({ transactions }) => {
   const [add, setAdd] = useState(false);
   // const [trans, setTrans] = useState(transactions);
   // console.log(transactions);
@@ -37,34 +32,34 @@ const TransactionsList = ({
     date: new Date(),
   });
 
-  useEffect(() => {
-    // if (planInfo.categories.length == 1) {
-    //   setTransactionData({
-    //     ...transactionData,
-    //     category: planInfo.categories[0].category,
-    //   });
-    // }
-  }, [planInfo]);
+  // useEffect(() => {
+  // if (planInfo.categories.length == 1) {
+  //   setTransactionData({
+  //     ...transactionData,
+  //     category: planInfo.categories[0].category,
+  //   });
+  // }
+  // }, [planInfo]);
 
-  const addTransaction = async (e) => {
-    e.preventDefault();
-    const payload = {
-      planId,
-      tranDate: formatAsHTMLDate(transactionData.date),
-      description: transactionData.desc,
-      catId: planInfo.categories.find(
-        (cat) => cat.name === transactionData.category
-      ).catId,
-      amount: transactionData.amount,
-    };
-    console.log(payload);
-    onAdd(payload);
-    // const id = await addPlanTransaction(payload);
-    setAdd(false);
-    // setTrans((prev) => {
-    //   [...prev, { id, ...payload }];
-    // });
-  };
+  // const addTransaction = async (e) => {
+  //   e.preventDefault();
+  //   const payload = {
+  //     planId,
+  //     tranDate: formatAsHTMLDate(transactionData.date),
+  //     description: transactionData.desc,
+  //     catId: planInfo.categories.find(
+  //       (cat) => cat.name === transactionData.category
+  //     ).catId,
+  //     amount: transactionData.amount,
+  //   };
+  //   console.log(payload);
+  //   onAdd(payload);
+  //   // const id = await addPlanTransaction(payload);
+  //   setAdd(false);
+  //   // setTrans((prev) => {
+  //   //   [...prev, { id, ...payload }];
+  //   // });
+  // };
 
   const cancelTransaction = (e) => {
     e.preventDefault();
@@ -73,14 +68,13 @@ const TransactionsList = ({
   return (
     <>
       <div>
-        <h1 className="text-3xl mb-4">Transactions</h1>
         {!add && transactions?.length > 0 ? (
-          <div>
+          <div className="p-2 md:p-4 w-full md:max-w-5xl mx-auto text-left">
             <div className="grid grid-cols-4 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
               <p>Date</p>
               <p>Description</p>
               <p>Category</p>
-              <p>Amount</p>
+              <p className="text-right">Amount</p>
             </div>
             {transactions?.map((transaction) => {
               return (
@@ -93,7 +87,7 @@ const TransactionsList = ({
                   </p>
                   <p className="my-4">{transaction.description}</p>
                   <p className="my-4">{transaction.category.name}</p>
-                  <p className="my-4">{transaction.amount}</p>
+                  <p className="my-4 text-right">{transaction.amount}</p>
                 </div>
               );
             })}
@@ -194,30 +188,8 @@ const TransactionsList = ({
                   />
                 </p>
               </div>
-              <div>
-                <button
-                  className="p-2 bg-black text-white rounded-lg m-4"
-                  onClick={addTransaction}
-                >
-                  Add
-                </button>
-                <button
-                  className="p-2 bg-black text-white rounded-lg m-4"
-                  onClick={(e) => cancelTransaction(e)}
-                >
-                  Cancel
-                </button>
-              </div>
             </form>
           </div>
-        )}
-        {!add && (
-          <button
-            className="p-2 bg-black text-white rounded-lg"
-            onClick={() => setAdd(true)}
-          >
-            New Transaction
-          </button>
         )}
       </div>
     </>
