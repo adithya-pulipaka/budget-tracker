@@ -65,12 +65,12 @@ const PlanDetails = () => {
         </div> */}
       </div>
       <div className="flex-2 pt-6 p-10 text-center">
-        <TransactionsList
+        {/* <TransactionsList
           planInfo={planInfo}
           transactions={transactions}
           planId={Number(planId)}
           onAdd={(payload) => addTransaction(payload)}
-        ></TransactionsList>
+        ></TransactionsList> */}
       </div>
     </div>
   );
