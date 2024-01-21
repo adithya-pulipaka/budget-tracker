@@ -12,7 +12,7 @@ import * as mysql from "mysql2/promise";
 import { parse } from "date-fns";
 import { CSVLink, CSVDownload } from "react-csv";
 import Reports from "@/components/budget/Reports";
-// dummy
+
 const list = [
   {
     tranId: 1,
