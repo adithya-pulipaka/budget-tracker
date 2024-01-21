@@ -98,7 +98,7 @@ const TransactionsList = ({ transactions }) => {
           ""
         )}
 
-        {add && (
+        {/* {add && (
           <div>
             <form>
               <div className="flex justify-around p-2">
@@ -190,7 +190,7 @@ const TransactionsList = ({ transactions }) => {
               </div>
             </form>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

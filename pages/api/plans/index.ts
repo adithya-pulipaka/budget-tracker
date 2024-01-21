@@ -9,26 +9,26 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) {
-  const db = await connect();
-  const planRepo = db.getRepository(Plan);
-  const planInfoRepo = db.getRepository(PlanInfo);
-  const { planId } = req.query;
-  let response;
-  if (planId) {
-    response = await planRepo.findOne({
-      where: { planId: Number(planId) },
-      relations: { planInfo: { category: true } },
-    });
-    const categories = response.planInfo
-      ? response.planInfo?.map((info) => info.category)
-      : [];
-    response.categories = categories;
-  } else {
-    response = await planRepo.find({
-      select: { planId: true, period: true },
-      order: { period: "DESC" },
-      take: 10,
-    });
-  }
-  res.status(200).json({ payload: response, error: null });
+  // const db = await connect();
+  // const planRepo = db.getRepository(Plan);
+  // const planInfoRepo = db.getRepository(PlanInfo);
+  // const { planId } = req.query;
+  // let response;
+  // if (planId) {
+  //   response = await planRepo.findOne({
+  //     where: { planId: Number(planId) },
+  //     relations: { planInfo: { category: true } },
+  //   });
+  //   const categories = response.planInfo
+  //     ? response.planInfo?.map((info) => info.category)
+  //     : [];
+  //   response.categories = categories;
+  // } else {
+  //   response = await planRepo.find({
+  //     select: { planId: true, period: true },
+  //     order: { period: "DESC" },
+  //     take: 10,
+  //   });
+  // }
+  res.status(200).json({ payload: "response", error: null });
 }
