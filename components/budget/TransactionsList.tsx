@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   convertTimestampToDate,
   formatDate,
@@ -20,6 +20,7 @@ type TransactionDetails = {
 
 const TransactionsList = ({ transactions }) => {
   const [add, setAdd] = useState(false);
+  const csvRef = useRef(null);
   // const [trans, setTrans] = useState(transactions);
   // console.log(transactions);
   // const { plan } = data;
@@ -65,9 +66,42 @@ const TransactionsList = ({ transactions }) => {
     e.preventDefault();
     setAdd(false);
   };
+
+  const exportTransactions = () => {
+    const header = ["Transaction Date", "Description", "Category", "Amount"];
+    const csvData = [
+      header,
+      ...transactions.map((tran) => [
+        tran.tranDate,
+        tran.description,
+        tran.category.name,
+        tran.amount,
+      ]),
+    ];
+    const formattedData = csvData.map((e) => e.join(",")).join("\n");
+    const blob = new Blob([formattedData], { type: "text/csv;charset=utf-8," });
+    const url = URL.createObjectURL(blob);
+    csvRef.current.href = url;
+    csvRef.current.click();
+  };
+
   return (
     <>
       <div>
+        <div className="p-2 w-full md:max-w-5xl mx-auto text-right">
+          <button
+            className="btn btn-outline btn-sm btn-primary"
+            onClick={exportTransactions}
+          >
+            Export CSV
+            <a
+              className="hidden"
+              download="Transactions.csv"
+              target="_blank"
+              ref={csvRef}
+            ></a>
+          </button>
+        </div>
         {!add && transactions?.length > 0 ? (
           <div className="p-2 md:p-4 w-full md:max-w-5xl mx-auto text-left">
             <div className="grid grid-cols-4 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
