@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,6 +13,7 @@ import Image from "next/image";
 import pieChart from "@/public/assets/PieChart.png";
 import barChart from "@/public/assets/BarChart.png";
 import { getColorList } from "@/utils/color-fns";
+import { getReportDataByCategory } from "@/lib/ApiClient";
 
 ChartJS.register(
   ArcElement,
@@ -26,19 +27,6 @@ ChartJS.register(
 // 2. bar chart for current vs prev month
 // 3. bar chart for income vs spending - Cashflow
 const colors = getColorList(6);
-console.log(colors);
-export const data = {
-  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-  datasets: [
-    {
-      label: "# of Votes",
-      data: [12, 19, 3, 5, 2, 3],
-      backgroundColor: colors,
-      borderColor: colors,
-      borderWidth: 1,
-    },
-  ],
-};
 
 const labels = ["January", "February", "March", "April", "May", "June", "July"];
 
@@ -63,8 +51,28 @@ const test = () => {
 
 const Reports = () => {
   const catRef = useRef(null);
+  const [catRefData, setCatRefData] = useState(null);
   const barRef = useRef(null);
   const chartRef = useRef(null);
+
+  const viewCategoryReport = async () => {
+    catRef.current.showModal();
+    const data = await getReportDataByCategory();
+    const chartData = {
+      labels: data.map((a) => a.name),
+      datasets: [
+        {
+          label: "Amount ($)",
+          data: data.map((a) => a.total),
+          backgroundColor: colors,
+          borderColor: colors,
+          borderWidth: 1,
+        },
+      ],
+    };
+    setCatRefData(chartData);
+  };
+
   return (
     <div className="mt-4 w-full md:max-w-5xl mx-auto">
       <div className="text-2xl">Reports</div>
@@ -79,16 +87,19 @@ const Reports = () => {
             sizes="100vw"
             objectFit="contain"
           />
-          <button
-            className="btn btn-sm"
-            onClick={() => catRef.current.showModal()}
-          >
+          <button className="btn btn-sm" onClick={viewCategoryReport}>
             View Chart
           </button>
           <dialog id="catModal" className="modal" ref={catRef}>
             <div className="modal-box flex flex-col justify-center items-center">
               <h3 className="font-bold text-lg">Transactions by Category</h3>
-              <Doughnut data={data} id="catRef" redraw={true}></Doughnut>
+              {catRefData && (
+                <Doughnut
+                  data={catRefData}
+                  id="catRef"
+                  redraw={true}
+                ></Doughnut>
+              )}
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>

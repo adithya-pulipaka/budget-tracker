@@ -61,3 +61,15 @@ export async function getPlanById(id) {
     console.log(err);
   }
 }
+
+//### REPORTS####
+export async function getReportDataByCategory() {
+  try {
+    const response: AxiosResponse<ApiResponse> = await axios.get(
+      `${BASE_URL}/reports/category`
+    );
+    return response.data.payload;
+  } catch (err) {
+    console.log(err);
+  }
+}
