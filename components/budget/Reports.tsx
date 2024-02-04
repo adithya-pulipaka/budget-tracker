@@ -80,14 +80,16 @@ const Reports = () => {
       <div className="mt-4 flex gap-8 justify-center flex-wrap">
         <div className="h-[300px] w-[300px] flex flex-col">
           <p className="font-bold text-lg">Transactions by Category</p>
-          <Image
-            alt="DoughnutChart"
-            src={pieChart}
-            placeholder="blur"
-            quality={100}
-            sizes="100vw"
-            objectFit="contain"
-          />
+          <div>
+            <Image
+              alt="DoughnutChart"
+              src={pieChart}
+              placeholder="blur"
+              quality={100}
+              sizes="100vw"
+              objectFit="contain"
+            />
+          </div>
           <button className="btn btn-sm" onClick={viewCategoryReport}>
             View Chart
           </button>
