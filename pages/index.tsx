@@ -43,7 +43,6 @@ export default function Home({ categories }) {
   useEffect(() => {
     (async () => {
       const data = await getTransactionsforPeriod(1);
-      console.log(data);
       setTranList(data);
     })();
   }, []);
