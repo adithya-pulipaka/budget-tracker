@@ -13,7 +13,8 @@ export default async function handler(
   }
   const db: mysql.Connection = await connect();
   const [response] = await db.query<mysql.RowDataPacket[]>(
-    `select c.name,sum(amount) as total from transaction t join category c on t.cat_id = c.cat_id group by c.cat_id;`
+    `select year(tran_date) as year,month(tran_date) as month, sum(amount) as amount from transaction group by year(tran_date),month(tran_date)
+    order by year(tran_date) desc, month(tran_date) desc;`
   );
   res.status(200).json({ payload: response, error: null });
 }

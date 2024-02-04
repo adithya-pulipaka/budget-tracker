@@ -73,3 +73,14 @@ export async function getReportDataByCategory() {
     console.log(err);
   }
 }
+
+export async function getReportDataByMonth() {
+  try {
+    const response: AxiosResponse<ApiResponse> = await axios.get(
+      `${BASE_URL}/reports/monthly`
+    );
+    return response.data.payload;
+  } catch (err) {
+    console.log(err);
+  }
+}
