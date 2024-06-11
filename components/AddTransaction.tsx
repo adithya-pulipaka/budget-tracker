@@ -1,5 +1,6 @@
 import { formatAsHTMLDate, parseDateAsSelected } from "@/utils/date-fns";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { addNewCategory } from "@/lib/ApiClient";
 
 const initialData = {
   tranDate: new Date(),
@@ -14,8 +15,11 @@ const categories = [
   { name: "three", catId: 1 },
 ];
 
-const AddTransaction = ({ onAdd, categories }) => {
+const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
   const [transactionData, setTransactionData] = useState(initialData);
+  const [showModal, setShowModal] = useState(false);
+  const catModal = useRef(null);
+  const catText = useRef(null);
 
   const addTransaction = (e) => {
     e.preventDefault();
@@ -34,8 +38,47 @@ const AddTransaction = ({ onAdd, categories }) => {
     setTransactionData(initialData);
   };
 
+  const modal = (
+    <>
+      <dialog className="modal" ref={catModal}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Add New Category</h3>
+          <div className="mt-4 text-left">
+            <label htmlFor="cat">Category: </label>
+            <input
+              type="text"
+              name="cat"
+              id="cat"
+              className="border rounded-lg mx-4 pl-2 py-1"
+              ref={catText}
+            />
+            <button className="btn btn-sm" onClick={(e) => addCategory(e)}>
+              Add
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    </>
+  );
+  const openModal = (e) => {
+    e.preventDefault();
+    setShowModal(true);
+    catModal.current.showModal();
+  };
+
+  const addCategory = async (e) => {
+    e.preventDefault();
+    catModal.current.close();
+    onCatAdd(catText.current.value);
+    catText.current.value = "";
+  };
+
   return (
     <>
+      {modal}
       <section>
         <div>
           <div className="flex justify-center p-4 w-full mx-auto mt-4 md:max-w-sm">
@@ -80,29 +123,36 @@ const AddTransaction = ({ onAdd, categories }) => {
                 <label htmlFor="category" className="label font-bold">
                   Category
                 </label>
-                <select
-                  name="category"
-                  id="category"
-                  value={transactionData.category}
-                  onChange={(e) =>
-                    setTransactionData({
-                      ...transactionData,
-                      category: e.target.value,
-                    })
-                  }
-                  className="select select-bordered select-sm w-full"
-                >
-                  <option disabled value="">
-                    -- Pick a Category --
-                  </option>
-                  {categories.map((cat) => {
-                    return (
-                      <option value={cat.name} key={cat.catId}>
-                        {cat.name}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="flex items-center justify-between gap-4">
+                  <select
+                    name="category"
+                    id="category"
+                    value={transactionData.category}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        category: e.target.value,
+                      })
+                    }
+                    className="select select-bordered select-sm w-full"
+                  >
+                    <option disabled value="">
+                      -- Pick a Category --
+                    </option>
+                    {categories.map((cat) => {
+                      return (
+                        <option value={cat.name} key={cat.catId}>
+                          {cat.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <div>
+                    <button className="btn btn-sm" onClick={openModal}>
+                      Add
+                    </button>
+                  </div>
+                </div>
               </div>
               <div>
                 <label htmlFor="amount" className="label font-bold">

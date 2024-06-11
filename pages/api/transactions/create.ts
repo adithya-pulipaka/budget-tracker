@@ -1,7 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import connect from "@/lib/mysql";
+import connect from "@/lib/mongo_client";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as mysql from "mysql2/promise";
+import mongoose from "mongoose";
+import { Category, Transaction } from "@/lib/mongoose_schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,21 +14,10 @@ export default async function handler(
     return;
   }
 
-  const db: mysql.Connection = await connect();
+  await connect();
   const payload: TransactionRequest = req.body;
-
-  const record = {
-    tran_date: payload.tranDate,
-    description: payload.description,
-    cat_id: payload.catId,
-    plan_id: payload.planId,
-    amount: payload.amount,
-  };
-
-  const [insertedRow] = await db.query<mysql.ResultSetHeader>(
-    `INSERT INTO transaction SET ?`,
-    record
-  );
-  const response = { ...payload, tranId: insertedRow.insertId };
+  const txn: mongoose.Document = new Transaction({ ...payload });
+  await txn.save();
+  const response = { ...txn.toJSON(), tranId: txn._id };
   res.status(200).json({ payload: response, error: null });
 }

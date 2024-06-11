@@ -2,16 +2,23 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import AddBudget from "@/components/budget/AddBudget";
 import BudgetList from "../components/budget/BudgetList";
-import { addPlanTransaction, getTransactionsforPeriod } from "@/lib/ApiClient";
+import {
+  addNewCategory,
+  addPlanTransaction,
+  getCategories,
+  getTransactionsforPeriod,
+} from "@/lib/ApiClient";
 import { useRouter } from "next/router";
 import AddTransaction from "@/components/AddTransaction";
 import { Tab } from "@headlessui/react";
 import TransactionsList from "@/components/budget/TransactionsList";
-import connect from "@/lib/mysql";
+import connect from "@/lib/mongo_client";
 import * as mysql from "mysql2/promise";
 import { parse } from "date-fns";
 import { CSVLink, CSVDownload } from "react-csv";
 import Reports from "@/components/budget/Reports";
+import { Category } from "@/lib/mongoose_schema";
+import mongoose from "mongoose";
 // dummy
 const list = [
   {
@@ -30,7 +37,7 @@ const list = [
   },
 ];
 
-export default function Home({ categories }) {
+export default function Home() {
   const [planList, setPlanList] = useState([]);
   const [tranList, setTranList] = useState([]);
   const [isNewPlan, setIsNewPlan] = useState(false);
@@ -39,13 +46,17 @@ export default function Home({ categories }) {
     list: false,
     reports: false,
   });
+  const [cats, setCats] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     (async () => {
-      const data = await getTransactionsforPeriod(1);
-      console.log(data);
-      setTranList(data);
+      const categories = await getCategories();
+      setCats(categories);
+      console.log(categories);
+      // const data = await getTransactionsforPeriod(1);
+      // console.log(data);
+      // setTranList(data);
     })();
   }, []);
 
@@ -60,10 +71,17 @@ export default function Home({ categories }) {
       ...tranList,
       {
         ...insertedTran,
-        category: categories.find((c) => c.cat_id === insertedTran.cat_id),
+        category: cats.find((c) => c.catId === insertedTran.catId),
       },
     ]);
     setActiveTabFlag({ add: false, list: true, reports: false });
+  };
+
+  const addCategory = async (name) => {
+    const cat = await addNewCategory({ name });
+    console.log(cat);
+    console.log(cats);
+    setCats([...cats, { name: cat.name, catId: cat.catId }]);
   };
 
   return (
@@ -104,7 +122,8 @@ export default function Home({ categories }) {
           <div className="mt-2">
             <AddTransaction
               onAdd={addTransaction}
-              categories={categories}
+              categories={cats}
+              onCatAdd={addCategory}
             ></AddTransaction>
           </div>
         )}
@@ -149,13 +168,19 @@ export default function Home({ categories }) {
 }
 
 export const getServerSideProps = async () => {
-  const connection = await connect();
-  let [rows] = await connection.query<mysql.RowDataPacket[]>(
-    "SELECT cat_id, name FROM `category`"
-  );
-  let response = [];
-  rows.forEach((row) => {
-    response.push({ catId: row["cat_id"], name: row["name"] });
-  });
+  // await connect();
+
+  // const response = categories;
+  // console.log(categories);
+  // const rows = [];
+  // let response = [];
+  // rows.forEach((row) => {
+  //   response.push({ catId: row["cat_id"], name: row["name"] });
+  // });
+  const response = [
+    { name: "one", catId: 1 },
+    { name: "two", catId: 2 },
+    { name: "three", catId: 3 },
+  ];
   return { props: { categories: response } };
 };

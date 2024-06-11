@@ -1,5 +1,4 @@
-import { add, format, parse, sub } from "date-fns";
-
+import { add, format, parse, parseISO, sub } from "date-fns";
 
 export const MONTHS = [
   "January",
@@ -47,7 +46,7 @@ export function formatDate(date) {
   if (typeof date === "object") {
     return format(date, "MM/dd/yyyy");
   } else if (typeof date === "string") {
-    const parsedDate = parse(date, "yyyy-MM-dd", new Date());
+    const parsedDate = parseDateAsSelected(parseISO(date));
     return format(parsedDate, "MM/dd/yyyy");
   }
 }

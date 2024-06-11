@@ -2,7 +2,7 @@
 import { Category } from "@/lib/models/Category";
 import { Plan } from "@/lib/models/Plan";
 import { PlanInfo } from "@/lib/models/PlanInfo";
-import connect from "@/lib/mysql";
+import connect from "@/lib/mongo_client";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as mysql from "mysql2/promise";
 
