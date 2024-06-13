@@ -17,7 +17,7 @@ const tranSchema = new Schema(
   {
     tranDate: Date,
     description: String,
-    catId: Number,
+    catId: mongoose.Types.ObjectId,
     planId: Number,
     amount: Number,
   },

@@ -64,7 +64,6 @@ export async function getPlanById(id) {
 
 export async function addNewCategory(name) {
   try {
-    console.log(axios.defaults.baseURL);
     const response: AxiosResponse<ApiResponse> = await axios.post(
       `${BASE_URL}/categories/create`,
       name
@@ -78,7 +77,6 @@ export async function addNewCategory(name) {
 
 export async function getCategories() {
   try {
-    console.log(axios.defaults.baseURL);
     const response: AxiosResponse<ApiResponse> = await axios.get(
       `${BASE_URL}/categories`
     );

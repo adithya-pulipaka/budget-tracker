@@ -1,7 +1,5 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import AddBudget from "@/components/budget/AddBudget";
-import BudgetList from "../components/budget/BudgetList";
 import {
   addNewCategory,
   addPlanTransaction,
@@ -10,35 +8,11 @@ import {
 } from "@/lib/ApiClient";
 import { useRouter } from "next/router";
 import AddTransaction from "@/components/AddTransaction";
-import { Tab } from "@headlessui/react";
 import TransactionsList from "@/components/budget/TransactionsList";
-import connect from "@/lib/mongo_client";
-import * as mysql from "mysql2/promise";
-import { parse } from "date-fns";
 import { CSVLink, CSVDownload } from "react-csv";
 import Reports from "@/components/budget/Reports";
-import { Category } from "@/lib/mongoose_schema";
-import mongoose from "mongoose";
-// dummy
-const list = [
-  {
-    tranId: 1,
-    tranDate: new Date(),
-    description: "desc-1",
-    amount: 4.5,
-    category: { catId: 1, name: "Cat-1" },
-  },
-  {
-    tranId: 2,
-    tranDate: new Date(),
-    description: "desc-2",
-    amount: 54.2,
-    category: { catId: 2, name: "Cat-2" },
-  },
-];
 
 export default function Home() {
-  const [planList, setPlanList] = useState([]);
   const [tranList, setTranList] = useState([]);
   const [isNewPlan, setIsNewPlan] = useState(false);
   const [activeTabFlag, setActiveTabFlag] = useState({
@@ -52,11 +26,15 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const categories = await getCategories();
+      const data = await getTransactionsforPeriod(1);
+      const txns = data.map((txn) => ({
+        ...txn,
+        category: {
+          name: categories.find((cat) => cat.catId === txn.catId).name,
+        },
+      }));
       setCats(categories);
-      console.log(categories);
-      // const data = await getTransactionsforPeriod(1);
-      // console.log(data);
-      // setTranList(data);
+      setTranList(txns);
     })();
   }, []);
 
@@ -79,8 +57,6 @@ export default function Home() {
 
   const addCategory = async (name) => {
     const cat = await addNewCategory({ name });
-    console.log(cat);
-    console.log(cats);
     setCats([...cats, { name: cat.name, catId: cat.catId }]);
   };
 
@@ -137,50 +113,11 @@ export default function Home() {
             <Reports></Reports>
           </div>
         )}
-        {/* {!isNewPlan && (
-          <button
-            className="bg-black text-white p-2 rounded-2xl mx-auto text-sm"
-            onClick={() => setIsNewPlan(true)}
-          >
-            New Plan
-          </button>
-        )}
-
-        <div>
-          {isNewPlan && (
-            <AddBudget
-              onSuccess={(plan) => onPlanAdd(plan["planId"])}
-              onCancel={() => setIsNewPlan(false)}
-            ></AddBudget>
-          )}
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
-          {planList.length > 0 ? (
-            <BudgetList data={planList}></BudgetList>
-          ) : (
-            <p>No Plans yet. Add one now!</p>
-          )}
-        </div> */}
       </div>
     </>
   );
 }
 
 export const getServerSideProps = async () => {
-  // await connect();
-
-  // const response = categories;
-  // console.log(categories);
-  // const rows = [];
-  // let response = [];
-  // rows.forEach((row) => {
-  //   response.push({ catId: row["cat_id"], name: row["name"] });
-  // });
-  const response = [
-    { name: "one", catId: 1 },
-    { name: "two", catId: 2 },
-    { name: "three", catId: 3 },
-  ];
-  return { props: { categories: response } };
+  return { props: { categories: "response" } };
 };
