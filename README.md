@@ -39,3 +39,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 spending by category
 total spending by month
 top spending categories/ highest month
+
+- upgrade react
+- upgrade next to 14/15+
