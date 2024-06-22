@@ -1,10 +1,14 @@
-import { formatAsHTMLDate, parseDateAsSelected } from "@/utils/date-fns";
-import React, { useRef, useState } from "react";
+import {
+  formatAsHTMLDate,
+  formatDate,
+  parseDateAsSelected,
+} from "@/utils/date-fns";
+import React, { useEffect, useRef, useState } from "react";
 import { addNewCategory } from "@/lib/ApiClient";
 
 const initialData = {
   tranDate: new Date(),
-  desc: "",
+  description: "",
   category: "",
   amount: 0,
 };
@@ -15,17 +19,30 @@ const categories = [
   { name: "three", catId: 1 },
 ];
 
-const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
-  const [transactionData, setTransactionData] = useState(initialData);
+const AddTransaction = ({ onAdd, categories, onCatAdd, tran, onCancel }) => {
+  const [transactionData, setTransactionData] = useState(
+    tran ? tran : initialData
+  );
+  // console.log(formatDate(tran.tranDate));
+  // console.log(formatDate(initialData.tranDate));
   const [showModal, setShowModal] = useState(false);
   const catModal = useRef(null);
   const catText = useRef(null);
+
+  useEffect(() => {
+    if (tran) {
+      const txns = { ...tran, category: tran.category.name };
+      setTransactionData(txns);
+    } else {
+      setTransactionData(initialData);
+    }
+  }, [tran]);
 
   const addTransaction = (e) => {
     e.preventDefault();
     const transaction = {
       tranDate: formatAsHTMLDate(transactionData.tranDate),
-      description: transactionData.desc,
+      description: transactionData.description,
       catId: categories.find((c) => c.name === transactionData.category).catId,
       amount: transactionData.amount,
       planId: 1,
@@ -35,7 +52,11 @@ const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
 
   const resetTransaction = (e) => {
     e.preventDefault();
-    setTransactionData(initialData);
+    if (tran) {
+      onCancel();
+    } else {
+      setTransactionData(initialData);
+    }
   };
 
   const modal = (
@@ -92,7 +113,7 @@ const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
                   name="date"
                   id="date"
                   className="input input-bordered input-sm w-full"
-                  value={formatAsHTMLDate(transactionData.tranDate)}
+                  value={formatDate(transactionData.tranDate)}
                   onChange={(e) => {
                     setTransactionData({
                       ...transactionData,
@@ -110,11 +131,11 @@ const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
                   name="description"
                   id="description"
                   className="input input-bordered input-sm w-full"
-                  value={transactionData.desc}
+                  value={transactionData.description}
                   onChange={(e) =>
                     setTransactionData({
                       ...transactionData,
-                      desc: e.target.value,
+                      description: e.target.value,
                     })
                   }
                 />
@@ -174,13 +195,13 @@ const AddTransaction = ({ onAdd, categories, onCatAdd }) => {
               </div>
               <div className="flex mt-8 justify-center gap-4">
                 <button className="btn" onClick={addTransaction}>
-                  Add
+                  {tran ? `Update` : `Add`}
                 </button>
                 <button
                   className="btn btn-neutral"
                   onClick={(e) => resetTransaction(e)}
                 >
-                  Reset
+                  {tran ? `Cancel` : `Reset`}
                 </button>
               </div>
             </form>

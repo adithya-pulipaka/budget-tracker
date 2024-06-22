@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   convertTimestampToDate,
   formatDate,
@@ -7,9 +7,13 @@ import {
 } from "../../utils/date-fns";
 import {
   addPlanTransaction,
+  deleteTransaction,
   getPlanById,
   getTransactionsforPeriod,
 } from "../../lib/ApiClient";
+import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import Toast from "../core/Toast";
+import { ToastContext } from "@/components/core/AppContexts";
 
 type TransactionDetails = {
   // planId: number;
@@ -18,8 +22,11 @@ type TransactionDetails = {
   // onAdd: any;
 };
 
-const TransactionsList = ({ transactions }) => {
+const TransactionsList = ({ transactions, onChange, onEdit }) => {
   const [add, setAdd] = useState(false);
+  const deleteModal = useRef(null);
+  const [selectedTran, setSelectedTran] = useState(null);
+  const { prop, setProp } = useContext(ToastContext);
   // const [trans, setTrans] = useState(transactions);
   // console.log(transactions);
   // const { plan } = data;
@@ -31,6 +38,48 @@ const TransactionsList = ({ transactions }) => {
     category: "",
     date: new Date(),
   });
+
+  const modal = (
+    <>
+      <dialog className="modal" ref={deleteModal}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">
+            Are you sure you want to delete this Transaction?
+          </h3>
+          <div className="mt-4 gap-2 flex justify-center">
+            <button
+              className="btn btn-sm"
+              onClick={() => delModalSubmit("Yes")}
+            >
+              Yes
+            </button>
+            <button
+              className="btn btn-sm btn-neutral"
+              onClick={() => delModalSubmit("Cancel")}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    </>
+  );
+
+  const delModalSubmit = async (resp) => {
+    if ("Cancel" === resp) {
+      deleteModal.current.close();
+    } else {
+      const result = await deleteTransaction(selectedTran);
+      if (result) {
+        deleteModal.current.close();
+        setProp({ display: true, msg: "Transaction Deleted" });
+        onChange();
+      }
+    }
+  };
 
   // useEffect(() => {
   // if (planInfo.categories.length == 1) {
@@ -65,22 +114,32 @@ const TransactionsList = ({ transactions }) => {
     e.preventDefault();
     setAdd(false);
   };
+
+  const openDeleteModal = (tranId, e) => {
+    e.preventDefault();
+    setSelectedTran(tranId);
+    deleteModal.current.showModal();
+  };
+
   return (
     <>
+      {modal}
+      {<Toast></Toast>}
       <div>
         {!add && transactions?.length > 0 ? (
           <div className="p-2 md:p-4 w-full md:max-w-5xl mx-auto text-left">
-            <div className="grid grid-cols-4 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
+            <div className="grid grid-cols-5 gap-2 place-content-center border-b-2 border-blue-500 py-5 font-bold">
               <p>Date</p>
               <p>Description</p>
               <p>Category</p>
               <p className="text-right">Amount</p>
+              <p></p>
             </div>
             {transactions?.map((transaction) => {
               return (
                 <div
                   key={transaction.tranId}
-                  className="grid grid-cols-4 gap-2 place-content-center"
+                  className="grid grid-cols-5 gap-2 place-content-center"
                 >
                   <p className="my-4">
                     {convertTimestampToDateStr(transaction.tranDate)}
@@ -88,6 +147,16 @@ const TransactionsList = ({ transactions }) => {
                   <p className="my-4">{transaction.description}</p>
                   <p className="my-4">{transaction.category.name}</p>
                   <p className="my-4 text-right">{transaction.amount}</p>
+                  <p className="my-4 mx-auto flex gap-2">
+                    <PencilSquareIcon
+                      className="h-5 w-5 cursor-pointer hover:text-blue-500"
+                      onClick={() => onEdit(transaction)}
+                    ></PencilSquareIcon>
+                    <TrashIcon
+                      className="h-5 w-5 cursor-pointer hover:text-red-500"
+                      onClick={(e) => openDeleteModal(transaction.tranId, e)}
+                    ></TrashIcon>
+                  </p>
                 </div>
               );
             })}

@@ -44,10 +44,10 @@ export function convertTimestampToDateStr(timestampObj) {
 
 export function formatDate(date) {
   if (typeof date === "object") {
-    return format(date, "MM/dd/yyyy");
+    return format(date, "yyyy-MM-dd");
   } else if (typeof date === "string") {
     const parsedDate = parseDateAsSelected(parseISO(date));
-    return format(parsedDate, "MM/dd/yyyy");
+    return format(parsedDate, "yyyy-MM-dd");
   }
 }
 

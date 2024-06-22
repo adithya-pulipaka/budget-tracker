@@ -86,3 +86,15 @@ export async function getCategories() {
     console.log(err);
   }
 }
+
+export async function deleteTransaction(tranId) {
+  try {
+    const response: AxiosResponse<ApiResponse> = await axios.delete(
+      `${BASE_URL}/transactions/${tranId}`
+    );
+    const payload = response.data.payload;
+    return payload;
+  } catch (err) {
+    console.log(err);
+  }
+}
