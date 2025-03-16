@@ -1,16 +1,9 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import AddBudget from "@/components/budget/AddBudget";
-import BudgetList from "../components/budget/BudgetList";
 import { addPlanTransaction, getTransactionsforPeriod } from "@/lib/ApiClient";
 import { useRouter } from "next/router";
 import AddTransaction from "@/components/AddTransaction";
-import { Tab } from "@headlessui/react";
 import TransactionsList from "@/components/budget/TransactionsList";
-import connect from "@/lib/mysql";
-import * as mysql from "mysql2/promise";
-import { parse } from "date-fns";
-import { CSVLink, CSVDownload } from "react-csv";
 import Reports from "@/components/budget/Reports";
 // dummy
 const list = [
@@ -29,8 +22,12 @@ const list = [
     category: { catId: 2, name: "Cat-2" },
   },
 ];
+const categories = [
+  { catId: 1, name: "Cat-1" },
+  { catId: 2, name: "Cat-2" },
+];
 
-export default function Home({ categories }) {
+export default function Home() {
   const [planList, setPlanList] = useState([]);
   const [tranList, setTranList] = useState([]);
   const [isNewPlan, setIsNewPlan] = useState(false);
@@ -60,7 +57,7 @@ export default function Home({ categories }) {
       ...tranList,
       {
         ...insertedTran,
-        category: categories.find((c) => c.cat_id === insertedTran.cat_id),
+        category: categories.find((c) => c.catId === insertedTran.cat_id),
       },
     ]);
     setActiveTabFlag({ add: false, list: true, reports: false });
@@ -118,44 +115,7 @@ export default function Home({ categories }) {
             <Reports></Reports>
           </div>
         )}
-        {/* {!isNewPlan && (
-          <button
-            className="bg-black text-white p-2 rounded-2xl mx-auto text-sm"
-            onClick={() => setIsNewPlan(true)}
-          >
-            New Plan
-          </button>
-        )}
-
-        <div>
-          {isNewPlan && (
-            <AddBudget
-              onSuccess={(plan) => onPlanAdd(plan["planId"])}
-              onCancel={() => setIsNewPlan(false)}
-            ></AddBudget>
-          )}
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-center my-12 p-6 gap-16 max-w-[1200px] mx-auto">
-          {planList.length > 0 ? (
-            <BudgetList data={planList}></BudgetList>
-          ) : (
-            <p>No Plans yet. Add one now!</p>
-          )}
-        </div> */}
       </div>
     </>
   );
 }
-
-export const getServerSideProps = async () => {
-  const connection = await connect();
-  let [rows] = await connection.query<mysql.RowDataPacket[]>(
-    "SELECT cat_id, name FROM `category`"
-  );
-  let response = [];
-  rows.forEach((row) => {
-    response.push({ catId: row["cat_id"], name: row["name"] });
-  });
-  return { props: { categories: response } };
-};

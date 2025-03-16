@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-const BASE_URL = process.env.BASE_URL || `/api`;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || `/api`;
 
 export async function getAllPlans() {
   try {
@@ -29,7 +29,7 @@ export async function addBudgetPlan(plan) {
 export async function getTransactionsforPeriod(planId) {
   try {
     const response: AxiosResponse<ApiResponse> = await axios.get(
-      `${BASE_URL}/transactions?planId=${planId}`
+      `${BASE_URL}/transactions`
     );
     return response.data.payload;
   } catch (err) {
@@ -38,7 +38,6 @@ export async function getTransactionsforPeriod(planId) {
 }
 
 export async function addPlanTransaction(transaction) {
-  console.log(transaction);
   try {
     const response: AxiosResponse<ApiResponse> = await axios.post(
       `${BASE_URL}/transactions/create`,

@@ -79,14 +79,14 @@ const TransactionsList = ({ transactions }) => {
             {transactions?.map((transaction) => {
               return (
                 <div
-                  key={transaction.tranId}
+                  key={transaction._id}
                   className="grid grid-cols-4 gap-2 place-content-center"
                 >
                   <p className="my-4">
                     {convertTimestampToDateStr(transaction.tranDate)}
                   </p>
                   <p className="my-4">{transaction.description}</p>
-                  <p className="my-4">{transaction.category.name}</p>
+                  {/* <p className="my-4">{transaction.category.name}</p> */}
                   <p className="my-4 text-right">{transaction.amount}</p>
                 </div>
               );
